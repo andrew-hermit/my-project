@@ -9,16 +9,11 @@
   </button>
 </div>
 
-      <cool-select
-        v-model="selected"
-        :items="items"
-        placeholder="Select name"
-      />
-
-
-    <button @click="getPosts()">Получить статьи</button>
-    <div>Отправлено статей: {{ getCount() }}
-    </div>
+    <button @click="getPosts()">Получить статьи</button> 
+    <button @click="ShowPosts()"><span v-if="showPosts">Спрятать статьи</span><span v-else="">Открыть статьи</span></button> 
+    <button @click="ClearPosts()">Очистить статьи</button>
+    <div>Отправлено статей: {{ getCount() }}</div>
+  </transition>
     <div>
        <br>
        <div>Отправить статью на сервер</div>
@@ -26,6 +21,7 @@
     </div> 
     <div v-for="(item, index) in postedPosts()" :key="index">
        {{item}}
+  </transition>
     </div>
     <div v-if="loading">Loading...</div>
 
@@ -34,23 +30,25 @@
           {{error.message}}
        </li>
     </ul>
+  <transition name="slide-fade">
+<div v-show="showPosts">
     <ul v-if="posts && posts.length">
        <li v-for="(item, index) in posts" :key="index" >
           <p><b>{{item.title}}</b></p>
           <p>{{item.body}}</p>
        </li>
     </ul>
+</div>
+  </transition>
   </div>
 </template>
 
 <script>
 import {HTTP} from '../http-common'
-import { CoolSelect } from "vue-cool-select"
 
 export default {
   name: 'HelloWorld',
   components: {
-    CoolSelect
   },
   data () {
     return {
@@ -58,14 +56,8 @@ export default {
        errors: [],
        loading: false,
        postBody: '',
-      selected: null,
-      items: [
-        'Anton',
-        'Andrey',
-        'Sasha',
-        'Vladimir',
-        'Dima'
-      ]
+       showPosts: true,
+      selected: null
     }
   },
   props: {
@@ -75,6 +67,12 @@ export default {
     }
   }, 
   methods: {
+    ShowPosts() {
+        return this.showPosts ? this.showPosts = false : this.showPosts = true
+    },
+    ClearPosts(){
+        this.posts = [] 
+    }, 
     getPosts() {
       this.loading = true
       this.posts = []
@@ -101,7 +99,11 @@ export default {
            amount: 1,
            text: this.postBody
          })
+         localStorage.posts = JSON.stringify(this.postedPosts())
+localStorage.name = this.postBody;
  console.log(this.$store.state.posts) // -> 1
+ console.log(localStorage) // -> 1
+
 
        HTTP.post('posts', {
           body: this.postBody
@@ -135,5 +137,19 @@ li {
 }
 a {
   color: #42b983;
+}
+
+/* Анимации появления и исчезновения могут иметь */
+/* различные продолжительности и динамику.       */
+.slide-fade-enter-active {
+  transition: all .3s ease;
+}
+.slide-fade-leave-active {
+  transition: all .8s ease;
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active до версии 2.1.8 */ {
+  transform: translateX(100px);
+  opacity: 0;
 }
 </style>

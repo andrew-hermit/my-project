@@ -10,10 +10,10 @@
 </div>
 
     <button @click="getPosts()">Получить статьи</button> 
-    <button @click="ShowPosts()"><span v-if="showPosts">Спрятать статьи</span><span v-else="">Открыть статьи</span></button> 
+    <button @click="ShowPosts()"><span v-if="showPosts">Спрятать статьи</span><span v-else>Открыть статьи</span></button> 
     <button @click="ClearPosts()">Очистить статьи</button>
     <div>Отправлено статей: {{ getCount() }}</div>
-  </transition>
+  
     <div>
        <br>
        <div>Отправить статью на сервер</div>
@@ -21,7 +21,7 @@
     </div> 
     <div v-for="(item, index) in postedPosts()" :key="index">
        {{item}}
-  </transition>
+  
     </div>
     <div v-if="loading">Loading...</div>
 
